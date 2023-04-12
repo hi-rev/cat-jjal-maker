@@ -13,7 +13,6 @@
   }
 
   .main-card button {
-
     position: relative;
     left: -45px;
     bottom: 15px;
@@ -25,10 +24,6 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
-  }
-
-  .favorites img {
-    width: 150px;
   }
 </style>
 
@@ -43,57 +38,77 @@
     function CatItem(props) {
       return (
         <li>
-          <img src={props.img} />
+          <img src={props.img} style={{ width: '150px' }}/>
         </li>
       );
     }
 
-    function Favorites() {
+    const Title = (props) => {
       return (
-        <ul class="favorites">
-          <CatItem img="https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn" />
-          <CatItem img="https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript" />
-        </ul>
+        <h1>{props.children}</h1>
       );
     }
 
-    const MainCard = ({ img }) => {
+    const Form = ({handleFormSubmit}) => {
       return (
-        <div className="main-card">
-          <img src={img} alt="고양이" width="400" />
-          <button>🤍</button>
-        </div>
-      );
-    }
-
-    const Title = () => {
-      return (
-        <h1>1번째 고양이 가라사대</h1>
-      );
-    }
-
-    const Form = () => {
-      return (
-        <form>
+        <form onSubmit={handleFormSubmit}>
           <input type="text" name="name" placeholder="영어 대사를 입력해주세요" />
           <button type="submit">생성</button>
         </form>
       );
     }
 
-    const app = (
-      <div>
-        <Title />
-        <Form />
-        <MainCard img="https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react" />
-        <Favorites />
-      </div>
-    );
+    const MainCard = ({ img }) => {
+      // 여기서 사용되는 함수명인 handleHeartClick은 리액트에서 이벤트 핸들러 이름을 짓는 일종의 관례이다.
+      // 'handle~이벤트명'과 같이 사용한다.
+      function handleHeartClick() {
+        console.log("하트 눌렀음");
+      }
+
+      return (
+        <div className="main-card">
+          <img src={img} alt="고양이" width="400"/>
+          <button onClick={handleHeartClick}>🤍</button>
+        </div>
+      );
+    }
+
+    const Favorites = () => {
+      return (
+        <ul className="favorites">
+          <CatItem img="https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn" />
+          <CatItem img="https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript" />
+        </ul>
+      );
+    }
+
+    const App = () => {
+      const CAT1 = "https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react";
+      const CAT2 = "https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn";
+      const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
+
+      const [count, setCount] = React.useState(1);
+      const [mainCatImage, setMainCatImage] = React.useState(CAT1);
+
+      const handleFormSubmit = (e) => {
+        e.preventDefault();
+
+        setCount(count + 1);
+        setMainCatImage(CAT2);
+      }
+
+      return (
+        <div>
+          <Title>{count}번째 고양이 가라사대</Title>
+          <Form handleFormSubmit={handleFormSubmit}/>
+          <MainCard img={mainCatImage} />
+          <Favorites />
+        </div>
+      );
+    } 
 
     const 여기다가그려 = document.querySelector('#app');
-    ReactDOM.createRoot(여기다가그려).render(app);
-
+    ReactDOM.createRoot(여기다가그려).render(<App />);
   </script>
 </body>
-
 </html>
