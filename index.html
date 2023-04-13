@@ -50,21 +50,27 @@
     }
 
     const Form = ({handleFormSubmit}) => {
+      const [value, setValue] = React.useState('');
+
+      const handleInputChange = (e) => {
+        setValue(e.target.value.toUpperCase());
+      }
+
       return (
         <form onSubmit={handleFormSubmit}>
-          <input type="text" name="name" placeholder="영어 대사를 입력해주세요" />
+          <input 
+              type="text" 
+              name="name" 
+              placeholder="영어 대사를 입력해주세요" 
+              value={value}
+              onChange={handleInputChange}
+          />
           <button type="submit">생성</button>
         </form>
       );
     }
 
-    const MainCard = ({ img }) => {
-      // 여기서 사용되는 함수명인 handleHeartClick은 리액트에서 이벤트 핸들러 이름을 짓는 일종의 관례이다.
-      // 'handle~이벤트명'과 같이 사용한다.
-      function handleHeartClick() {
-        console.log("하트 눌렀음");
-      }
-
+    const MainCard = ({ img, handleHeartClick }) => {
       return (
         <div className="main-card">
           <img src={img} alt="고양이" width="400"/>
@@ -73,11 +79,14 @@
       );
     }
 
-    const Favorites = () => {
+    const Favorites = ({favorites}) => {
       return (
         <ul className="favorites">
-          <CatItem img="https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn" />
-          <CatItem img="https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript" />
+          {/* javaScript에서 배열을 순회하는 API가 바로 Map이다. 
+              배열에는 유니크한 key 값이 필요하기 때문에 넣어줘야 한다. */}
+          {favorites.map((cat) => (
+            <CatItem img={cat} key={cat} />
+          ))}
         </ul>
       );
     }
@@ -89,6 +98,7 @@
 
       const [count, setCount] = React.useState(1);
       const [mainCatImage, setMainCatImage] = React.useState(CAT1);
+      const [favorites, setFavorites] = React.useState([CAT1, CAT2]);
 
       const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -97,12 +107,19 @@
         setMainCatImage(CAT2);
       }
 
+      // 여기서 사용되는 함수명인 handleHeartClick은 리액트에서 이벤트 핸들러 이름을 짓는 일종의 관례이다.
+      // 'handle~이벤트명'과 같이 사용한다.
+      // handleHeartClick: 하트를 눌렀을 때 고양이 하나를 추가한다.
+      const handleHeartClick = () => {
+        setFavorites([...favorites, CAT3]);
+      }
+
       return (
         <div>
           <Title>{count}번째 고양이 가라사대</Title>
           <Form handleFormSubmit={handleFormSubmit}/>
-          <MainCard img={mainCatImage} />
-          <Favorites />
+          <MainCard img={mainCatImage} handleHeartClick={handleHeartClick}/>
+          <Favorites favorites={favorites}/>
         </div>
       );
     } 
