@@ -49,11 +49,32 @@
       );
     }
 
-    const Form = ({handleFormSubmit}) => {
+    const Form = ({ updateMainCat }) => {
+      const includesHangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/i.test(text);
       const [value, setValue] = React.useState('');
+      const [errorMessage, setErrorMessage] = React.useState('');
 
       const handleInputChange = (e) => {
-        setValue(e.target.value.toUpperCase());
+        setErrorMessage('');
+
+        const userValue = e.target.value;
+        if (includesHangul(userValue)) {
+          setErrorMessage('한글은 입력할 수 없습니다.');
+        }
+
+        setValue(userValue.toUpperCase());
+      }
+
+      const handleFormSubmit = (e) => {
+        e.preventDefault();
+        setErrorMessage('');
+
+        if (value === '') {
+          setErrorMessage('빈 값으로 만들 수 없습니다.');
+          return;
+        }
+        
+        updateMainCat();
       }
 
       return (
@@ -62,19 +83,20 @@
               type="text" 
               name="name" 
               placeholder="영어 대사를 입력해주세요" 
-              value={value}
-              onChange={handleInputChange}
+              value={value} 
+              onChange={handleInputChange} 
           />
           <button type="submit">생성</button>
+          <p style={{ color: "red" }}>{errorMessage}</p>
         </form>
       );
     }
 
-    const MainCard = ({ img, handleHeartClick }) => {
+    const MainCard = ({ img, onHeartClick }) => {
       return (
         <div className="main-card">
           <img src={img} alt="고양이" width="400"/>
-          <button onClick={handleHeartClick}>🤍</button>
+          <button onClick={onHeartClick}>🤍</button>
         </div>
       );
     }
@@ -100,11 +122,9 @@
       const [mainCatImage, setMainCatImage] = React.useState(CAT1);
       const [favorites, setFavorites] = React.useState([CAT1, CAT2]);
 
-      const handleFormSubmit = (e) => {
-        e.preventDefault();
-
-        setCount(count + 1);
+      const updateMainCat = (e) => {
         setMainCatImage(CAT2);
+        setCount(count + 1);
       }
 
       // 여기서 사용되는 함수명인 handleHeartClick은 리액트에서 이벤트 핸들러 이름을 짓는 일종의 관례이다.
@@ -116,16 +136,18 @@
 
       return (
         <div>
+          {/* react convention:
+              컴포넌트에 props로 넘겨줄 때는 함수명 앞에 handle 대신 on을 붙여준다. */}
           <Title>{count}번째 고양이 가라사대</Title>
-          <Form handleFormSubmit={handleFormSubmit}/>
-          <MainCard img={mainCatImage} handleHeartClick={handleHeartClick}/>
+          <Form updateMainCat={updateMainCat}/>
+          <MainCard img={mainCatImage} onHeartClick={handleHeartClick}/>
           <Favorites favorites={favorites}/>
         </div>
       );
     } 
 
-    const 여기다가그려 = document.querySelector('#app');
-    ReactDOM.createRoot(여기다가그려).render(<App />);
+    const root = document.querySelector('#app');
+    ReactDOM.createRoot(root).render(<App />);
   </script>
 </body>
 </html>
