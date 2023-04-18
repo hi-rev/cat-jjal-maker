@@ -34,6 +34,15 @@
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script type="text/babel">
 
+    const jsonLocalStorage = {
+      setItem: (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      getItem: (key) => {
+        return JSON.parse(localStorage.getItem(key));
+      },
+    };
+
     // 컴포넌트는 무조건 대문자로 시작한다.
     function CatItem(props) {
       return (
@@ -118,20 +127,25 @@
       const CAT2 = "https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn";
       const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
 
-      const [count, setCount] = React.useState(1);
+      // localStorge에 있는 값을 useState 초기값으로 설정해줄 수 있다.
+      const [count, setCount] = React.useState(jsonLocalStorage.getItem('count'));
       const [mainCatImage, setMainCatImage] = React.useState(CAT1);
-      const [favorites, setFavorites] = React.useState([CAT1, CAT2]);
+      const [favorites, setFavorites] = React.useState(jsonLocalStorage.getItem('favorites') || []);
 
       const updateMainCat = (e) => {
         setMainCatImage(CAT2);
-        setCount(count + 1);
+        const nextCount = count + 1;
+        setCount(nextCount);
+        jsonLocalStorage.setItem("count", nextCount);
       }
 
       // 여기서 사용되는 함수명인 handleHeartClick은 리액트에서 이벤트 핸들러 이름을 짓는 일종의 관례이다.
       // 'handle~이벤트명'과 같이 사용한다.
       // handleHeartClick: 하트를 눌렀을 때 고양이 하나를 추가한다.
       const handleHeartClick = () => {
-        setFavorites([...favorites, CAT3]);
+        const nextFavorites = [...favorites, mainCatImage]; 
+        setFavorites(nextFavorites);
+        jsonLocalStorage.setItem('favorites', nextFavorites);
       }
 
       return (
